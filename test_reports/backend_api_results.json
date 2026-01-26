@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-01-26T23:19:47.032300",
+  "total_tests": 9,
+  "passed_tests": 9,
+  "success_rate": 100.0,
+  "test_details": [
+    {
+      "test": "API Root",
+      "status": "PASS",
+      "response_keys": [
+        "message",
+        "status"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Bitcoin Price",
+      "status": "PASS",
+      "response_keys": [
+        "coin_id",
+        "name",
+        "symbol",
+        "current_price",
+        "price_change_24h",
+        "price_change_percentage_24h",
+        "market_cap",
+        "total_volume",
+        "high_24h",
+        "low_24h",
+        "circulating_supply",
+        "last_updated"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Bitcoin Historical (1D)",
+      "status": "PASS",
+      "response_keys": [
+        "coin_id",
+        "days",
+        "prices",
+        "market_caps",
+        "total_volumes",
+        "is_fallback"
+      ],
+      "has_fallback": true
+    },
+    {
+      "test": "Bitcoin Historical (7D)",
+      "status": "PASS",
+      "response_keys": [
+        "coin_id",
+        "days",
+        "prices",
+        "market_caps",
+        "total_volumes"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Bitcoin Historical (30D)",
+      "status": "PASS",
+      "response_keys": [
+        "coin_id",
+        "days",
+        "prices",
+        "market_caps",
+        "total_volumes"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Bitcoin Historical (90D)",
+      "status": "PASS",
+      "response_keys": [
+        "coin_id",
+        "days",
+        "prices",
+        "market_caps",
+        "total_volumes",
+        "is_fallback"
+      ],
+      "has_fallback": true
+    },
+    {
+      "test": "Top Coins",
+      "status": "PASS",
+      "response_keys": [
+        "coins",
+        "last_updated",
+        "is_fallback"
+      ],
+      "has_fallback": true
+    },
+    {
+      "test": "Trending Coins",
+      "status": "PASS",
+      "response_keys": [
+        "trending_coins",
+        "last_updated"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Global Market Stats",
+      "status": "PASS",
+      "response_keys": [
+        "total_market_cap",
+        "total_volume",
+        "market_cap_change_24h",
+        "active_cryptocurrencies",
+        "markets",
+        "btc_dominance",
+        "eth_dominance",
+        "last_updated",
+        "is_fallback"
+      ],
+      "has_fallback": true
+    }
+  ]
+}
