@@ -4,7 +4,61 @@ import { BitcoinHero } from "./components/BitcoinHero";
 import { GlobalStats } from "./components/GlobalStats";
 import { TopCoins } from "./components/TopCoins";
 import { TrendingCoins } from "./components/TrendingCoins";
-import { Activity, Github } from "lucide-react";
+import { Activity, Copy, Check } from "lucide-react";
+import { useState } from "react";
+
+const BITCOIN_ADDRESS = "bc1qp6ywmsa9ylwzrw44z2mv5m37gn8s6yy5kaeqkd";
+
+const BitcoinDonation = () => {
+  const [copied, setCopied] = useState(false);
+
+  const copyAddress = () => {
+    navigator.clipboard.writeText(BITCOIN_ADDRESS);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div 
+      data-testid="bitcoin-donation-card"
+      className="glass-card rounded-2xl p-6 col-span-full"
+    >
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+            <span className="text-xl font-bold text-white">₿</span>
+          </div>
+          <div>
+            <h3 className="text-lg font-heading font-bold text-white">Support This Project</h3>
+            <p className="text-muted-foreground text-sm">Send Bitcoin to support development</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex-1 sm:flex-none px-4 py-3 rounded-xl bg-black/40 border border-white/10 font-mono text-sm text-cyan-400 truncate max-w-xs sm:max-w-md">
+            {BITCOIN_ADDRESS}
+          </div>
+          <button
+            data-testid="copy-btc-address-btn"
+            onClick={copyAddress}
+            className={`p-3 rounded-xl transition-all ${
+              copied 
+                ? 'bg-green-500/20 border border-green-500/50' 
+                : 'bg-white/5 border border-white/10 hover:bg-white/10'
+            }`}
+            title="Copy address"
+          >
+            {copied ? (
+              <Check className="w-5 h-5 text-green-400" />
+            ) : (
+              <Copy className="w-5 h-5 text-white" />
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   return (
@@ -49,6 +103,9 @@ const Dashboard = () => {
           
           {/* Trending Coins */}
           <TrendingCoins />
+          
+          {/* Bitcoin Donation */}
+          <BitcoinDonation />
         </div>
 
         {/* Footer */}
