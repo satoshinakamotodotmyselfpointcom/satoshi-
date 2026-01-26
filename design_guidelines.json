@@ -1,0 +1,120 @@
+{
+  "identity": {
+    "persona": "E1",
+    "archetype": "Electric & Neon (Future, Speed, Disruption)",
+    "core_principles": [
+      "Fusion over Imitation",
+      "Emotion First",
+      "Content is King",
+      "Zoom In",
+      "Negative Space",
+      "Contrast"
+    ]
+  },
+  "typography": {
+    "primary_font": "Chivo",
+    "secondary_font": "Manrope",
+    "mono_font": "JetBrains Mono",
+    "usage": {
+      "headings": "font-family: 'Chivo', sans-serif; font-weight: 900; letter-spacing: -0.02em;",
+      "body": "font-family: 'Manrope', sans-serif;",
+      "code": "font-family: 'JetBrains Mono', monospace;"
+    },
+    "installation": "Add this to index.html: <link href='https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap' rel='stylesheet'>"
+  },
+  "colors": {
+    "palette": {
+      "background": "#050505",
+      "foreground": "#FAFAFA",
+      "card": "#0A0A0A",
+      "card_foreground": "#FAFAFA",
+      "primary": "#06B6D4",
+      "primary_foreground": "#000000",
+      "secondary": "#171717",
+      "secondary_foreground": "#FAFAFA",
+      "accent": "#10B981",
+      "accent_foreground": "#000000",
+      "destructive": "#EF4444",
+      "border": "#262626",
+      "input": "#262626",
+      "ring": "#06B6D4"
+    },
+    "special_colors": {
+      "neon_cyan": "#06B6D4",
+      "neon_green": "#10B981",
+      "neon_yellow": "#FFD60A",
+      "neon_red": "#F43F5E",
+      "void_black": "#050505",
+      "glass_bg": "rgba(10, 10, 10, 0.6)",
+      "glass_border": "rgba(255, 255, 255, 0.1)"
+    }
+  },
+  "layout": {
+    "grid_system": "Bento Grid Mode B (High Density)",
+    "spacing": {
+      "container_padding": "p-6 md:p-8 lg:p-12",
+      "gap": "gap-4 md:gap-6",
+      "internal_padding": "p-6"
+    },
+    "strategies": [
+      "Use 'Bento Grid' for the main dashboard layout.",
+      "Hero section should use 'The Tracing Beam' or 'Glassmorphism' style.",
+      "Tables should be dense but readable with 'JetBrains Mono' for numbers."
+    ]
+  },
+  "components": {
+    "cards": {
+      "style": "Glassmorphism (Crystal Variant)",
+      "classes": "bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl"
+    },
+    "buttons": {
+      "primary": "bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-full px-8 py-3 transition-all shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.7)]",
+      "secondary": "bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full px-6 py-2 backdrop-blur-md"
+    },
+    "charts": {
+      "library": "Recharts",
+      "style": "Neon lines (stroke-width: 3px) with gradient fills. Hide grid lines or make them very subtle (opacity 0.1). Tooltips should be dark glass."
+    }
+  },
+  "visual_enhancers": {
+    "gradients": "Use subtle radial gradients in the background to create depth (e.g., a faint cyan glow behind the Bitcoin chart).",
+    "textures": "Add a subtle noise texture overlay to the background to reduce digital flatness.",
+    "motion": "Use Framer Motion for entrance animations (staggered fade-in for list items). Hover states should feel magnetic."
+  },
+  "image_urls": {
+    "hero_bg": "https://images.unsplash.com/photo-1755282464684-6568f7f76b5d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGJsb2NrY2hhaW4lMjBuZXR3b3JrJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY5NDY4Njg1fDA&ixlib=rb-4.1.0&q=85",
+    "bitcoin_logo": "https://images.unsplash.com/photo-1732111816779-aeec50f788ba?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHw0fHxiaXRjb2luJTIwY3J5cHRvY3VycmVuY3klMjBmdXR1cmlzdGljfGVufDB8fHx8MTc2OTQ2ODY4M3ww&ixlib=rb-4.1.0&q=85",
+    "bitcoin_gold": "https://images.unsplash.com/photo-1707075891514-9d271023f384?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjd8MHwxfHNlYXJjaHwxfHxiaXRjb2luJTIwY3J5cHRvY3VycmVuY3klMjBmdXR1cmlzdGljfGVufDB8fHx8MTc2OTQ2ODY4M3ww&ixlib=rb-4.1.0&q=85",
+    "abstract_texture": "https://images.unsplash.com/photo-1736858405164-4f61f5583aa0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGJsb2NrY2hhaW4lMjBuZXR3b3JrJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzY5NDY4Njg1fDA&ixlib=rb-4.1.0&q=85"
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL FONTS: Add the Google Fonts link to public/index.html immediately.",
+    "2. CONFIGURE TAILWIND: Update tailwind.config.js with the custom colors and font families defined above.",
+    "3. GLOBAL STYLES: Update index.css to set the background to #050505 and text to #FAFAFA. Add a noise texture class if possible.",
+    "4. COMPONENT OVERRIDES: When using Shadcn components, override the default 'border-border' with 'border-white/10' for a subtler look.",
+    "5. LAYOUT: Implement the Dashboard using the Bento Grid strategy. The Bitcoin Price Chart should be the 'Hero' element (col-span-2 or 3).",
+    "6. API: Use CoinGecko API for data. Handle rate limits gracefully (cache data or use a mock fallback if needed).",
+    "7. THEME: Force Dark Mode. Do not implement a light mode toggle as the user requested a 'crypto-focused aesthetic' which implies dark mode.",
+    "8. TESTING: Add data-testid to all interactive elements."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use 'sonner' for toasts. Sonner component are located in /app/src/components/ui/sonner.tsx"
+  ]
+}
