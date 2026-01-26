@@ -4,6 +4,7 @@ import { BitcoinHero } from "./components/BitcoinHero";
 import { GlobalStats } from "./components/GlobalStats";
 import { TopCoins } from "./components/TopCoins";
 import { TrendingCoins } from "./components/TrendingCoins";
+import { TradeActions } from "./components/TradeActions";
 import { Activity, Copy, Check } from "lucide-react";
 import { useState } from "react";
 
@@ -97,6 +98,9 @@ const Dashboard = () => {
           
           {/* Right Column - Global Stats */}
           <GlobalStats />
+          
+          {/* Trade Action Buttons */}
+          <TradeActions />
           
           {/* Top Coins Table - Spans 2 columns */}
           <TopCoins />
