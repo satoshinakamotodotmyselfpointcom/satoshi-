@@ -345,6 +345,7 @@ export const AdminPanel = () => {
                   <tr>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">User</th>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Email</th>
+                    <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">BTC Wallet</th>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Joined</th>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Deposited</th>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">BTC Balance</th>
@@ -353,7 +354,7 @@ export const AdminPanel = () => {
                 <tbody>
                   {users.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="text-center py-12 text-muted-foreground">
+                      <td colSpan="6" className="text-center py-12 text-muted-foreground">
                         No users registered yet
                       </td>
                     </tr>
@@ -370,6 +371,11 @@ export const AdminPanel = () => {
                         </td>
                         <td className="px-6 py-4">
                           <span className="text-muted-foreground">{user.email}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <code className="text-cyan-400 text-xs bg-black/40 px-2 py-1 rounded break-all">
+                            {user.wallets?.BTC ? `${user.wallets.BTC.slice(0, 20)}...` : 'N/A'}
+                          </code>
                         </td>
                         <td className="px-6 py-4">
                           <span className="text-muted-foreground text-sm">{formatDate(user.created_at)}</span>
