@@ -207,6 +207,221 @@ class CryptoAPITester:
             print(f"   ETH Dominance: {eth_dom:.1f}%")
         
         return success
+    # ============ AUTHENTICATION TESTS ============
+    
+    def test_user_registration(self):
+        """Test user registration endpoint"""
+        # Generate unique test user
+        timestamp = datetime.now().strftime("%H%M%S")
+        test_email = f"test_user_{timestamp}@example.com"
+        test_password = "TestPass123!"
+        test_name = f"Test User {timestamp}"
+        
+        success, response = self.run_test(
+            "User Registration",
+            "POST",
+            "auth/register",
+            200,
+            {
+                "email": test_email,
+                "password": test_password,
+                "name": test_name
+            }
+        )
+        
+        if success and isinstance(response, dict):
+            # Check response structure
+            required_fields = ['token', 'user']
+            missing_fields = [field for field in required_fields if field not in response]
+            if missing_fields:
+                print(f"   Warning: Missing fields: {missing_fields}")
+                return False
+            
+            # Store auth token for subsequent tests
+            self.auth_token = response.get('token')
+            user_data = response.get('user', {})
+            self.test_user_id = user_data.get('id')
+            
+            print(f"   User created: {user_data.get('name')} ({user_data.get('email')})")
+            print(f"   User ID: {self.test_user_id}")
+            print(f"   Token received: {len(self.auth_token) if self.auth_token else 0} chars")
+            
+            # Check user balances
+            balances = user_data.get('balances', {})
+            print(f"   Initial balances: {balances}")
+            
+            # Validate balances structure
+            expected_cryptos = ['BTC', 'ETH', 'SOL', 'XRP', 'USDT']
+            for crypto in expected_cryptos:
+                if crypto not in balances:
+                    print(f"   Warning: Missing {crypto} balance")
+                elif balances[crypto] != 0.0:
+                    print(f"   Warning: {crypto} balance not zero: {balances[crypto]}")
+        
+        return success
+
+    def test_user_login(self):
+        """Test user login endpoint"""
+        if not self.test_user_id:
+            print("   Skipping login test - no registered user")
+            return False
+            
+        # Use the same credentials from registration
+        timestamp = datetime.now().strftime("%H%M%S")
+        test_email = f"test_user_{timestamp}@example.com"
+        test_password = "TestPass123!"
+        
+        success, response = self.run_test(
+            "User Login",
+            "POST",
+            "auth/login",
+            200,
+            {
+                "email": test_email,
+                "password": test_password
+            }
+        )
+        
+        if success and isinstance(response, dict):
+            # Check response structure
+            required_fields = ['token', 'user']
+            missing_fields = [field for field in required_fields if field not in response]
+            if missing_fields:
+                print(f"   Warning: Missing fields: {missing_fields}")
+                return False
+            
+            # Update auth token
+            self.auth_token = response.get('token')
+            user_data = response.get('user', {})
+            
+            print(f"   Login successful: {user_data.get('name')}")
+            print(f"   Token updated: {len(self.auth_token) if self.auth_token else 0} chars")
+        
+        return success
+
+    def test_get_user_profile(self):
+        """Test get current user profile endpoint"""
+        if not self.auth_token:
+            print("   Skipping profile test - no auth token")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Profile",
+            "GET",
+            "auth/me",
+            200,
+            auth_required=True
+        )
+        
+        if success and isinstance(response, dict):
+            # Check response structure
+            required_fields = ['id', 'email', 'name', 'balances']
+            missing_fields = [field for field in required_fields if field not in response]
+            if missing_fields:
+                print(f"   Warning: Missing fields: {missing_fields}")
+            
+            print(f"   Profile: {response.get('name')} ({response.get('email')})")
+            print(f"   Created: {response.get('created_at', 'N/A')}")
+            print(f"   Balances: {response.get('balances', {})}")
+            print(f"   Total deposited: ${response.get('total_deposited', 0)}")
+            print(f"   Total withdrawn: ${response.get('total_withdrawn', 0)}")
+        
+        return success
+
+    def test_get_user_transactions(self):
+        """Test get user transactions endpoint"""
+        if not self.auth_token:
+            print("   Skipping transactions test - no auth token")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Transactions",
+            "GET",
+            "auth/transactions",
+            200,
+            auth_required=True
+        )
+        
+        if success and isinstance(response, dict):
+            transactions = response.get('transactions', [])
+            print(f"   Transactions found: {len(transactions)}")
+            
+            if transactions:
+                # Show first transaction details
+                tx = transactions[0]
+                print(f"   Latest: {tx.get('crypto_type')} - ${tx.get('amount')} - {tx.get('payment_status')}")
+            else:
+                print("   No transactions (expected for new user)")
+        
+        return success
+
+    def test_get_user_balances(self):
+        """Test get user balances endpoint"""
+        if not self.auth_token:
+            print("   Skipping balances test - no auth token")
+            return False
+            
+        success, response = self.run_test(
+            "Get User Balances",
+            "GET",
+            "auth/balances",
+            200,
+            auth_required=True
+        )
+        
+        if success and isinstance(response, dict):
+            balances = response.get('balances', {})
+            print(f"   Balances: {balances}")
+            print(f"   Total deposited: ${response.get('total_deposited', 0)}")
+            print(f"   Total withdrawn: ${response.get('total_withdrawn', 0)}")
+            
+            # Validate balance structure
+            expected_cryptos = ['BTC', 'ETH', 'SOL', 'XRP', 'USDT']
+            for crypto in expected_cryptos:
+                if crypto not in balances:
+                    print(f"   Warning: Missing {crypto} balance")
+        
+        return success
+
+    def test_invalid_login(self):
+        """Test login with invalid credentials"""
+        success, response = self.run_test(
+            "Invalid Login",
+            "POST",
+            "auth/login",
+            401,  # Expect 401 Unauthorized
+            {
+                "email": "nonexistent@example.com",
+                "password": "wrongpassword"
+            }
+        )
+        
+        if success:
+            print("   Correctly rejected invalid credentials")
+        
+        return success
+
+    def test_unauthorized_access(self):
+        """Test accessing protected endpoint without token"""
+        # Temporarily clear token
+        original_token = self.auth_token
+        self.auth_token = None
+        
+        success, response = self.run_test(
+            "Unauthorized Access",
+            "GET",
+            "auth/me",
+            401,  # Expect 401 Unauthorized
+            auth_required=False  # Don't add auth header
+        )
+        
+        # Restore token
+        self.auth_token = original_token
+        
+        if success:
+            print("   Correctly rejected unauthorized access")
+        
+        return success
 
     def run_all_tests(self):
         """Run all API tests"""
