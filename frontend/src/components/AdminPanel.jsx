@@ -592,6 +592,92 @@ export const AdminPanel = () => {
           </div>
         </div>
       )}
+
+      {/* User Detail Modal */}
+      {selectedUser && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-card rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-heading font-bold text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-cyan-400" />
+                User Details
+              </h2>
+              <button
+                onClick={() => setSelectedUser(null)}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* User Info */}
+              <div className="p-4 rounded-xl bg-white/5">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                    <span className="text-2xl text-white font-bold">{selectedUser.name?.charAt(0) || '?'}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl text-white font-bold">{selectedUser.name}</h3>
+                    <p className="text-muted-foreground">{selectedUser.email}</p>
+                    <p className="text-muted-foreground text-sm">Joined: {formatDate(selectedUser.created_at)}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-muted-foreground text-sm">Total Deposited</span>
+                    <p className="text-green-400 font-mono text-lg">{formatUSD(selectedUser.total_deposited)}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-sm">Total Withdrawn</span>
+                    <p className="text-red-400 font-mono text-lg">{formatUSD(selectedUser.total_withdrawn)}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Balances */}
+              <div>
+                <h4 className="text-lg font-bold text-white mb-3">Balances</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {Object.entries(selectedUser.balances || {}).map(([coin, amount]) => (
+                    <div key={coin} className="p-3 rounded-xl bg-white/5 border border-white/10">
+                      <span className="text-muted-foreground text-sm">{coin}</span>
+                      <p className="text-white font-mono">{amount?.toFixed(6) || '0.000000'}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Wallet Addresses */}
+              <div>
+                <h4 className="text-lg font-bold text-white mb-3">Wallet Addresses</h4>
+                <div className="space-y-3">
+                  {Object.entries(selectedUser.wallets || {}).map(([coin, address]) => (
+                    <div key={coin} className="p-4 rounded-xl bg-white/5 border border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-white font-medium">{coin} Wallet</span>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(address);
+                            alert(`${coin} address copied!`);
+                          }}
+                          className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                        >
+                          <Copy className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                      <p className="text-cyan-400 font-mono text-sm break-all">{address}</p>
+                    </div>
+                  ))}
+                  {(!selectedUser.wallets || Object.keys(selectedUser.wallets).length === 0) && (
+                    <p className="text-muted-foreground">No wallet addresses generated for this user</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
