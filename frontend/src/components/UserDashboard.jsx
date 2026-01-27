@@ -49,6 +49,12 @@ export const UserDashboard = ({ onClose }) => {
     setRefreshing(false);
   };
 
+  const copyWalletAddress = (coin, address) => {
+    navigator.clipboard.writeText(address);
+    setCopiedWallet(coin);
+    setTimeout(() => setCopiedWallet(null), 2000);
+  };
+
   const calculateTotalBalance = () => {
     if (!user?.balances) return 0;
     let total = 0;
