@@ -429,6 +429,138 @@ async def get_admin_stats(admin: Dict = Depends(require_admin)):
         "platform_fee_earned": total_revenue * 0.02  # 2% fee
     }
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+class AdminChangePasswordRequest(BaseModel):
+    new_password: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordConfirm(BaseModel):
+    token: str
+    new_password: str
+
+@api_router.post("/admin/change-password")
+async def admin_change_password(req: AdminChangePasswordRequest, admin: Dict = Depends(require_admin)):
+    """Admin changes their own password"""
+    global ADMIN_PASSWORD
+    
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update admin password in memory (for this session)
+    ADMIN_PASSWORD = req.new_password
+    
+    # Store in database for persistence
+    await db.admin_settings.update_one(
+        {"key": "admin_password"},
+        {"$set": {"value": req.new_password, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        upsert=True
+    )
+    
+    return {"message": "Admin password changed successfully"}
+
+@api_router.post("/auth/change-password")
+async def user_change_password(req: ChangePasswordRequest, user: Dict = Depends(require_auth)):
+    """User changes their own password"""
+    # Get full user with password
+    full_user = await db.users.find_one({"id": user["id"]})
+    
+    if not verify_password(req.current_password, full_user["password"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update password
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {"password": hash_password(req.new_password), "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    return {"message": "Password changed successfully"}
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(req: ResetPasswordRequest):
+    """Request password reset - generates reset token"""
+    user = await db.users.find_one({"email": req.email.lower()})
+    
+    # Always return success to prevent email enumeration
+    if not user:
+        return {"message": "If this email exists, a reset link has been sent"}
+    
+    # Generate reset token
+    reset_token = str(uuid.uuid4())
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    
+    # Store reset token
+    await db.password_resets.update_one(
+        {"email": req.email.lower()},
+        {"$set": {
+            "token": reset_token,
+            "email": req.email.lower(),
+            "expires_at": expires_at.isoformat(),
+            "used": False,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    
+    # In production, send email here. For now, return token (for testing)
+    # TODO: Integrate email service
+    return {
+        "message": "If this email exists, a reset link has been sent",
+        "reset_token": reset_token,  # Remove in production, use email instead
+        "reset_url": f"/reset-password?token={reset_token}"
+    }
+
+@api_router.post("/auth/reset-password")
+async def reset_password(req: ResetPasswordConfirm):
+    """Reset password using token"""
+    # Find valid reset token
+    reset_record = await db.password_resets.find_one({
+        "token": req.token,
+        "used": False
+    })
+    
+    if not reset_record:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    # Check expiration
+    expires_at = datetime.fromisoformat(reset_record["expires_at"].replace('Z', '+00:00'))
+    if datetime.now(timezone.utc) > expires_at:
+        raise HTTPException(status_code=400, detail="Reset token has expired")
+    
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update user password
+    await db.users.update_one(
+        {"email": reset_record["email"]},
+        {"$set": {"password": hash_password(req.new_password), "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    # Mark token as used
+    await db.password_resets.update_one(
+        {"token": req.token},
+        {"$set": {"used": True}}
+    )
+    
+    return {"message": "Password has been reset successfully"}
+
+@api_router.get("/admin/password-resets")
+async def get_password_resets(admin: Dict = Depends(require_admin)):
+    """Admin can see pending password reset requests"""
+    resets = await db.password_resets.find(
+        {"used": False},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    return {"resets": resets}
+
 @api_router.get("/crypto/price/{coin_id}", response_model=CryptoPrice)
 async def get_crypto_price(coin_id: str):
     """Get current price for a cryptocurrency"""
