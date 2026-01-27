@@ -435,7 +435,15 @@ class CryptoAPITester:
             self.test_bitcoin_historical,
             self.test_top_coins,
             self.test_trending_coins,
-            self.test_global_stats
+            self.test_global_stats,
+            # Authentication tests
+            self.test_user_registration,
+            self.test_user_login,
+            self.test_get_user_profile,
+            self.test_get_user_transactions,
+            self.test_get_user_balances,
+            self.test_invalid_login,
+            self.test_unauthorized_access
         ]
         
         for test in tests:
