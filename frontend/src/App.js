@@ -189,6 +189,7 @@ function App() {
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </BrowserRouter>
       </div>
