@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Users, CreditCard, TrendingUp, LogOut, RefreshCw, Mail, Calendar, Wallet, DollarSign, Key, Eye, EyeOff, Check } from 'lucide-react';
+import { Shield, Users, CreditCard, TrendingUp, LogOut, RefreshCw, Mail, Calendar, Wallet, DollarSign, Key, Eye, EyeOff, Check, X, Copy } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
