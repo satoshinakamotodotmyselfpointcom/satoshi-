@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowDownUp, ArrowUpRight, ArrowDownLeft, Wallet, X, Copy, Check, ExternalLink } from 'lucide-react';
+import { ArrowDownUp, ArrowUpRight, ArrowDownLeft, Wallet, X, Copy, Check, ExternalLink, Banknote } from 'lucide-react';
 import { Button } from './ui/button';
 
 const BITCOIN_ADDRESS = "bc1qp6ywmsa9ylwzrw44z2mv5m37gn8s6yy5kaeqkd";
@@ -10,6 +10,24 @@ export const TradeActions = () => {
   const [amount, setAmount] = useState('');
   const [fromCoin, setFromCoin] = useState('BTC');
   const [toCoin, setToCoin] = useState('ETH');
+  const [withdrawAddress, setWithdrawAddress] = useState('');
+  const [withdrawCoin, setWithdrawCoin] = useState('BTC');
+
+  // Current market prices
+  const PRICES = {
+    BTC: 88360.65,
+    ETH: 3125.50,
+    SOL: 238.45,
+    XRP: 3.05,
+    BNB: 685.20,
+    DOGE: 0.325,
+    ADA: 0.985,
+    AVAX: 35.80,
+    LINK: 22.15,
+    USDT: 1.00
+  };
+
+  const WITHDRAWAL_FEE = 0.02; // 2% fee, user gets 98%
 
   const copyAddress = () => {
     navigator.clipboard.writeText(BITCOIN_ADDRESS);
@@ -22,12 +40,20 @@ export const TradeActions = () => {
     setAmount('');
   };
 
-  const formatUSD = (btcAmount) => {
-    const btcPrice = 88360.65;
-    return (parseFloat(btcAmount || 0) * btcPrice).toLocaleString('en-US', {
+  const formatUSD = (btcAmount, coin = 'BTC') => {
+    const price = PRICES[coin] || PRICES.BTC;
+    return (parseFloat(btcAmount || 0) * price).toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD'
     });
+  };
+
+  const calculateWithdrawal = (amount, coin) => {
+    const price = PRICES[coin] || PRICES.BTC;
+    const totalUSD = parseFloat(amount || 0) * price;
+    const fee = totalUSD * WITHDRAWAL_FEE;
+    const youReceive = totalUSD - fee;
+    return { totalUSD, fee, youReceive };
   };
 
   const actions = [
@@ -35,6 +61,7 @@ export const TradeActions = () => {
     { id: 'sell', label: 'Sell', icon: ArrowUpRight, color: 'from-red-500 to-rose-600', shadow: 'shadow-red-500/30' },
     { id: 'swap', label: 'Swap', icon: ArrowDownUp, color: 'from-purple-500 to-violet-600', shadow: 'shadow-purple-500/30' },
     { id: 'receive', label: 'Receive', icon: Wallet, color: 'from-cyan-500 to-blue-600', shadow: 'shadow-cyan-500/30' },
+    { id: 'withdraw', label: 'Withdraw', icon: Banknote, color: 'from-amber-500 to-orange-600', shadow: 'shadow-amber-500/30' },
   ];
 
   return (
@@ -45,7 +72,7 @@ export const TradeActions = () => {
         className="glass-card rounded-2xl p-6 col-span-full"
       >
         <h3 className="text-lg font-heading font-bold text-white mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           {actions.map((action) => (
             <button
               key={action.id}
