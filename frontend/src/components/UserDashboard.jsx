@@ -18,6 +18,8 @@ export const UserDashboard = ({ onClose }) => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [copiedWallet, setCopiedWallet] = useState(null);
+  const [showWallets, setShowWallets] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
