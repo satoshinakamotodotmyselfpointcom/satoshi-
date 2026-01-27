@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Wallet, ArrowUpRight, ArrowDownLeft, History, TrendingUp, TrendingDown, RefreshCw, LogOut } from 'lucide-react';
+import { Wallet, ArrowUpRight, ArrowDownLeft, History, TrendingUp, TrendingDown, RefreshCw, LogOut, Copy, Check, QrCode } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
