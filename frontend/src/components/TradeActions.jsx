@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { ArrowDownUp, ArrowUpRight, ArrowDownLeft, Wallet, X, Copy, Check, ExternalLink, Banknote } from 'lucide-react';
+import { ArrowDownUp, ArrowUpRight, ArrowDownLeft, Wallet, X, Copy, Check, ExternalLink, Banknote, CreditCard, Building2, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const BITCOIN_ADDRESS = "bc1qp6ywmsa9ylwzrw44z2mv5m37gn8s6yy5kaeqkd";
 
@@ -12,6 +14,9 @@ export const TradeActions = () => {
   const [toCoin, setToCoin] = useState('ETH');
   const [withdrawAddress, setWithdrawAddress] = useState('');
   const [withdrawCoin, setWithdrawCoin] = useState('BTC');
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [buyAmount, setBuyAmount] = useState('100');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Current market prices
   const PRICES = {
@@ -54,6 +59,42 @@ export const TradeActions = () => {
     const fee = totalUSD * WITHDRAWAL_FEE;
     const youReceive = totalUSD - fee;
     return { totalUSD, fee, youReceive };
+  };
+
+  // Handle payment with Stripe
+  const handlePayment = async () => {
+    if (!buyAmount || parseFloat(buyAmount) < 10) {
+      alert('Minimum purchase is $10');
+      return;
+    }
+    
+    setIsProcessing(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/payments/create-checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          package_id: 'custom',
+          origin_url: window.location.origin,
+          payment_method: paymentMethod,
+          custom_amount: parseFloat(buyAmount),
+          crypto_type: 'BTC'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment initialization failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const actions = [
