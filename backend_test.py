@@ -18,6 +18,8 @@ class CryptoAPITester:
         self.test_results = []
         self.auth_token = None
         self.test_user_id = None
+        self.test_email = None
+        self.test_password = None
 
     def run_test(self, name, method, endpoint, expected_status, params=None, auth_required=False):
         """Run a single API test"""
