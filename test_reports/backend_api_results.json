@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-01-27T03:25:43.397090",
+  "timestamp": "2026-01-27T03:26:25.882507",
   "total_tests": 16,
-  "passed_tests": 15,
-  "success_rate": 93.75,
+  "passed_tests": 16,
+  "success_rate": 100.0,
   "test_details": [
     {
       "test": "API Root",
@@ -129,10 +129,12 @@
     },
     {
       "test": "User Login",
-      "status": "FAIL",
-      "expected_status": 200,
-      "actual_status": 401,
-      "error": "{\"detail\":\"Invalid email or password\"}"
+      "status": "PASS",
+      "response_keys": [
+        "token",
+        "user"
+      ],
+      "has_fallback": false
     },
     {
       "test": "Get User Profile",
