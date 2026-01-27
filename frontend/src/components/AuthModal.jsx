@@ -235,9 +235,32 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
             </div>
           </div>
 
+          {mode === 'login' && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode('forgot');
+                setError('');
+                setSuccessMessage('');
+              }}
+              className="text-cyan-400 hover:text-cyan-300 text-sm"
+            >
+              Forgot your password?
+            </button>
+          )}
+            </>
+          )}
+
           {error && (
             <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50">
               <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 flex items-center gap-2">
+              <Check className="w-4 h-4 text-green-400" />
+              <p className="text-green-400 text-sm">{successMessage}</p>
             </div>
           )}
 
@@ -250,29 +273,31 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                {mode === 'login' ? 'Signing In...' : 'Creating Account...'}
+                {mode === 'login' ? 'Signing In...' : mode === 'register' ? 'Creating Account...' : mode === 'forgot' ? 'Sending...' : 'Resetting...'}
               </>
             ) : (
-              mode === 'login' ? 'Sign In' : 'Create Account'
+              mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : mode === 'forgot' ? 'Send Reset Link' : 'Reset Password'
             )}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-muted-foreground text-sm">
-            {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
-            <button
-              data-testid="auth-toggle-mode-btn"
-              onClick={() => {
-                setMode(mode === 'login' ? 'register' : 'login');
-                setError('');
-              }}
-              className="text-cyan-400 hover:text-cyan-300 ml-1 font-medium"
-            >
-              {mode === 'login' ? 'Sign Up' : 'Sign In'}
-            </button>
-          </p>
-        </div>
+        {(mode === 'login' || mode === 'register') && (
+          <div className="mt-6 text-center">
+            <p className="text-muted-foreground text-sm">
+              {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
+              <button
+                data-testid="auth-toggle-mode-btn"
+                onClick={() => {
+                  setMode(mode === 'login' ? 'register' : 'login');
+                  setError('');
+                }}
+                className="text-cyan-400 hover:text-cyan-300 ml-1 font-medium"
+              >
+                {mode === 'login' ? 'Sign Up' : 'Sign In'}
+              </button>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
