@@ -1,17 +1,20 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import List, Optional, Dict, Any
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import httpx
 import asyncio
 import random
+import jwt
+import bcrypt
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
 ROOT_DIR = Path(__file__).parent
@@ -24,6 +27,14 @@ db = client[os.environ['DB_NAME']]
 
 # Stripe API Key
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+
+# JWT Settings
+JWT_SECRET = os.environ.get('JWT_SECRET', 'bitcoin-crypto-app-secret-key-2024')
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
+
+# Security
+security = HTTPBearer(auto_error=False)
 
 # Create the main app
 app = FastAPI(title="CryptoTrack API")
