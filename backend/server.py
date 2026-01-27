@@ -28,9 +28,9 @@ db = client[os.environ['DB_NAME']]
 # Stripe API Key
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
 
-# Blockchain.com API (for real Bitcoin wallets)
-BLOCKCHAIN_API_KEY = os.environ.get('BLOCKCHAIN_API_KEY', '')
-BLOCKCHAIN_API_URL = "https://api.blockchain.com/v3"
+# Blockchain.info API (FREE - for real Bitcoin data)
+BLOCKCHAIN_INFO_API = "https://blockchain.info"
+BLOCKCHAIN_WS_URL = "wss://ws.blockchain.info/inv"
 
 # JWT Settings
 JWT_SECRET = os.environ.get('JWT_SECRET', 'bitcoin-crypto-app-secret-key-2024')
