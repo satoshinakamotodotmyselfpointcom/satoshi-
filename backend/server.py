@@ -54,33 +54,33 @@ def set_cached(key: str, data: Any):
     cache[key] = data
     cache_timestamps[key] = datetime.now(timezone.utc)
 
-# Fallback data when API is rate limited
+# Fallback data when API is rate limited - Updated to current market prices
 FALLBACK_BITCOIN = {
     "coin_id": "bitcoin",
     "name": "Bitcoin",
     "symbol": "btc",
-    "current_price": 104500.0,
-    "price_change_24h": 1250.50,
-    "price_change_percentage_24h": 1.21,
-    "market_cap": 2070000000000,
-    "total_volume": 45000000000,
-    "high_24h": 105200.0,
-    "low_24h": 103100.0,
+    "current_price": 88360.65,
+    "price_change_24h": -1250.50,
+    "price_change_percentage_24h": -1.40,
+    "market_cap": 1750000000000,
+    "total_volume": 38000000000,
+    "high_24h": 89800.00,
+    "low_24h": 87500.00,
     "circulating_supply": 19800000,
     "last_updated": datetime.now(timezone.utc).isoformat()
 }
 
 FALLBACK_TOP_COINS = [
-    {"id": "bitcoin", "name": "Bitcoin", "symbol": "btc", "image": "https://assets.coingecko.com/coins/images/1/small/bitcoin.png", "current_price": 104500, "market_cap": 2070000000000, "market_cap_rank": 1, "price_change_percentage_24h": 1.21, "price_change_percentage_7d": 3.5, "total_volume": 45000000000},
-    {"id": "ethereum", "name": "Ethereum", "symbol": "eth", "image": "https://assets.coingecko.com/coins/images/279/small/ethereum.png", "current_price": 3350, "market_cap": 403000000000, "market_cap_rank": 2, "price_change_percentage_24h": 2.15, "price_change_percentage_7d": 5.2, "total_volume": 18000000000},
-    {"id": "tether", "name": "Tether", "symbol": "usdt", "image": "https://assets.coingecko.com/coins/images/325/small/Tether.png", "current_price": 1.0, "market_cap": 139000000000, "market_cap_rank": 3, "price_change_percentage_24h": 0.01, "price_change_percentage_7d": 0.02, "total_volume": 95000000000},
-    {"id": "solana", "name": "Solana", "symbol": "sol", "image": "https://assets.coingecko.com/coins/images/4128/small/solana.png", "current_price": 255, "market_cap": 123000000000, "market_cap_rank": 4, "price_change_percentage_24h": 3.45, "price_change_percentage_7d": 8.1, "total_volume": 5500000000},
-    {"id": "binancecoin", "name": "BNB", "symbol": "bnb", "image": "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", "current_price": 705, "market_cap": 101000000000, "market_cap_rank": 5, "price_change_percentage_24h": 0.85, "price_change_percentage_7d": 2.3, "total_volume": 1800000000},
-    {"id": "ripple", "name": "XRP", "symbol": "xrp", "image": "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", "current_price": 3.12, "market_cap": 179000000000, "market_cap_rank": 6, "price_change_percentage_24h": -0.55, "price_change_percentage_7d": 1.8, "total_volume": 8500000000},
-    {"id": "cardano", "name": "Cardano", "symbol": "ada", "image": "https://assets.coingecko.com/coins/images/975/small/cardano.png", "current_price": 1.05, "market_cap": 37000000000, "market_cap_rank": 7, "price_change_percentage_24h": 1.92, "price_change_percentage_7d": 4.5, "total_volume": 950000000},
-    {"id": "dogecoin", "name": "Dogecoin", "symbol": "doge", "image": "https://assets.coingecko.com/coins/images/5/small/dogecoin.png", "current_price": 0.38, "market_cap": 56000000000, "market_cap_rank": 8, "price_change_percentage_24h": 2.33, "price_change_percentage_7d": 6.7, "total_volume": 3200000000},
-    {"id": "avalanche-2", "name": "Avalanche", "symbol": "avax", "image": "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png", "current_price": 38.5, "market_cap": 16000000000, "market_cap_rank": 9, "price_change_percentage_24h": 1.78, "price_change_percentage_7d": 3.9, "total_volume": 680000000},
-    {"id": "polkadot", "name": "Polkadot", "symbol": "dot", "image": "https://assets.coingecko.com/coins/images/12171/small/polkadot.png", "current_price": 7.25, "market_cap": 11000000000, "market_cap_rank": 10, "price_change_percentage_24h": 0.95, "price_change_percentage_7d": 2.1, "total_volume": 320000000}
+    {"id": "bitcoin", "name": "Bitcoin", "symbol": "btc", "image": "https://assets.coingecko.com/coins/images/1/small/bitcoin.png", "current_price": 88360.65, "market_cap": 1750000000000, "market_cap_rank": 1, "price_change_percentage_24h": -1.40, "price_change_percentage_7d": -2.5, "total_volume": 38000000000},
+    {"id": "ethereum", "name": "Ethereum", "symbol": "eth", "image": "https://assets.coingecko.com/coins/images/279/small/ethereum.png", "current_price": 2450.00, "market_cap": 295000000000, "market_cap_rank": 2, "price_change_percentage_24h": -2.15, "price_change_percentage_7d": -3.2, "total_volume": 15000000000},
+    {"id": "tether", "name": "Tether", "symbol": "usdt", "image": "https://assets.coingecko.com/coins/images/325/small/Tether.png", "current_price": 1.00, "market_cap": 139000000000, "market_cap_rank": 3, "price_change_percentage_24h": 0.01, "price_change_percentage_7d": 0.02, "total_volume": 95000000000},
+    {"id": "xrp", "name": "XRP", "symbol": "xrp", "image": "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png", "current_price": 2.48, "market_cap": 143000000000, "market_cap_rank": 4, "price_change_percentage_24h": -1.55, "price_change_percentage_7d": -4.8, "total_volume": 7500000000},
+    {"id": "solana", "name": "Solana", "symbol": "sol", "image": "https://assets.coingecko.com/coins/images/4128/small/solana.png", "current_price": 188.50, "market_cap": 92000000000, "market_cap_rank": 5, "price_change_percentage_24h": -3.45, "price_change_percentage_7d": -5.1, "total_volume": 4500000000},
+    {"id": "binancecoin", "name": "BNB", "symbol": "bnb", "image": "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png", "current_price": 605.00, "market_cap": 87000000000, "market_cap_rank": 6, "price_change_percentage_24h": -0.85, "price_change_percentage_7d": -1.3, "total_volume": 1600000000},
+    {"id": "dogecoin", "name": "Dogecoin", "symbol": "doge", "image": "https://assets.coingecko.com/coins/images/5/small/dogecoin.png", "current_price": 0.285, "market_cap": 42000000000, "market_cap_rank": 7, "price_change_percentage_24h": -2.33, "price_change_percentage_7d": -4.7, "total_volume": 2800000000},
+    {"id": "cardano", "name": "Cardano", "symbol": "ada", "image": "https://assets.coingecko.com/coins/images/975/small/cardano.png", "current_price": 0.78, "market_cap": 28000000000, "market_cap_rank": 8, "price_change_percentage_24h": -1.92, "price_change_percentage_7d": -3.5, "total_volume": 750000000},
+    {"id": "avalanche-2", "name": "Avalanche", "symbol": "avax", "image": "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png", "current_price": 28.50, "market_cap": 12000000000, "market_cap_rank": 9, "price_change_percentage_24h": -1.78, "price_change_percentage_7d": -2.9, "total_volume": 580000000},
+    {"id": "polkadot", "name": "Polkadot", "symbol": "dot", "image": "https://assets.coingecko.com/coins/images/12171/small/polkadot.png", "current_price": 5.85, "market_cap": 9000000000, "market_cap_rank": 10, "price_change_percentage_24h": -0.95, "price_change_percentage_7d": -2.1, "total_volume": 280000000}
 ]
 
 FALLBACK_TRENDING = [
@@ -401,13 +401,13 @@ async def get_global_stats():
             # Use fallback
             logger.info("Using fallback data for global stats")
             fallback_result = {
-                "total_market_cap": 3060000000000,
-                "total_volume": 145000000000,
-                "market_cap_change_24h": 1.25,
+                "total_market_cap": 2850000000000,
+                "total_volume": 125000000000,
+                "market_cap_change_24h": -1.85,
                 "active_cryptocurrencies": 15420,
                 "markets": 1120,
-                "btc_dominance": 57.4,
-                "eth_dominance": 13.2,
+                "btc_dominance": 61.4,
+                "eth_dominance": 10.3,
                 "last_updated": datetime.now(timezone.utc).isoformat(),
                 "is_fallback": True
             }
@@ -432,13 +432,13 @@ async def get_global_stats():
         logger.error(f"Error fetching global stats: {e}")
         # Return fallback
         return {
-            "total_market_cap": 3060000000000,
-            "total_volume": 145000000000,
-            "market_cap_change_24h": 1.25,
+            "total_market_cap": 2850000000000,
+            "total_volume": 125000000000,
+            "market_cap_change_24h": -1.85,
             "active_cryptocurrencies": 15420,
             "markets": 1120,
-            "btc_dominance": 57.4,
-            "eth_dominance": 13.2,
+            "btc_dominance": 61.4,
+            "eth_dominance": 10.3,
             "last_updated": datetime.now(timezone.utc).isoformat(),
             "is_fallback": True
         }
