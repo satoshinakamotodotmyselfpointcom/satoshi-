@@ -130,7 +130,7 @@ export const TradeActions = () => {
                   </div>
 
                   <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-                    <p className="text-green-400 text-sm">Current Price: $88,360.65 per BTC</p>
+                    <p className="text-green-400 text-sm">Current Price: ${PRICES.BTC.toLocaleString()} per BTC</p>
                   </div>
 
                   <a
@@ -184,7 +184,7 @@ export const TradeActions = () => {
                   </div>
 
                   <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                    <p className="text-red-400 text-sm">Current Price: $88,360.65 per BTC</p>
+                    <p className="text-red-400 text-sm">Current Price: ${PRICES.BTC.toLocaleString()} per BTC</p>
                   </div>
 
                   <a
