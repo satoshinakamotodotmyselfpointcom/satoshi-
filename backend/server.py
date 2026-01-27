@@ -33,6 +33,10 @@ JWT_SECRET = os.environ.get('JWT_SECRET', 'bitcoin-crypto-app-secret-key-2024')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 
+# Admin credentials (YOU can change this)
+ADMIN_EMAIL = "ademcakir271@gmail.com"
+ADMIN_PASSWORD = "admin2024!"
+
 # Security
 security = HTTPBearer(auto_error=False)
 
