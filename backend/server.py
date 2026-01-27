@@ -185,6 +185,24 @@ class AdminLogin(BaseModel):
     email: str
     password: str
 
+def generate_wallet_address(prefix: str, user_id: str) -> str:
+    """Generate a unique wallet address for a user"""
+    import hashlib
+    hash_input = f"{prefix}_{user_id}_{uuid.uuid4()}"
+    hash_hex = hashlib.sha256(hash_input.encode()).hexdigest()
+    
+    if prefix == "BTC":
+        return f"bc1q{hash_hex[:38]}"
+    elif prefix == "ETH":
+        return f"0x{hash_hex[:40]}"
+    elif prefix == "SOL":
+        return f"{hash_hex[:44]}"
+    elif prefix == "XRP":
+        return f"r{hash_hex[:33]}"
+    elif prefix == "USDT":
+        return f"0x{hash_hex[:40]}"
+    return hash_hex[:42]
+
 async def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict:
     """Require admin authentication"""
     if not credentials:
