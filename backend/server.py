@@ -181,6 +181,22 @@ class UserResponse(BaseModel):
     created_at: str
     balances: Dict[str, float] = {}
 
+class AdminLogin(BaseModel):
+    email: str
+    password: str
+
+async def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict:
+    """Require admin authentication"""
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = credentials.credentials
+    payload = decode_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    if not payload.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return payload
+
 async def fetch_with_retry(url: str, params: dict = None, max_retries: int = 2):
     """Fetch with retry and exponential backoff"""
     for attempt in range(max_retries):
