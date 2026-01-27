@@ -168,6 +168,59 @@ export const UserDashboard = ({ onClose }) => {
         </div>
       </div>
 
+      {/* Wallet Addresses Section */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+            <QrCode className="w-5 h-5 text-green-400" />
+            Your Wallet Addresses
+          </h3>
+          <button
+            onClick={() => setShowWallets(!showWallets)}
+            className="text-cyan-400 text-sm hover:underline"
+          >
+            {showWallets ? 'Hide Wallets' : 'Show Wallets'}
+          </button>
+        </div>
+        
+        {showWallets && (
+          <div className="space-y-3">
+            {Object.entries(user?.wallets || {}).map(([coin, address]) => (
+              <div
+                key={coin}
+                data-testid={`wallet-${coin.toLowerCase()}`}
+                className="p-4 rounded-xl bg-white/5 border border-white/10"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <span className="text-xs font-bold text-green-400">{coin}</span>
+                    </div>
+                    <span className="text-white font-medium">{coin} Wallet</span>
+                  </div>
+                  <button
+                    onClick={() => copyWalletAddress(coin, address)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      copiedWallet === coin 
+                        ? 'bg-green-500/20 text-green-400' 
+                        : 'bg-white/5 text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {copiedWallet === coin ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-cyan-400 font-mono text-sm break-all">{address}</p>
+                <p className="text-muted-foreground text-xs mt-2">Send only {coin} to this address</p>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {!showWallets && (
+          <p className="text-muted-foreground text-sm">Click "Show Wallets" to see your deposit addresses</p>
+        )}
+      </div>
+
       {/* Transaction History */}
       <div>
         <h3 className="text-lg font-heading font-bold text-white mb-4 flex items-center gap-2">
