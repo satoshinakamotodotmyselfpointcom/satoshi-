@@ -88,18 +88,93 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
         </button>
 
         <div className="text-center mb-6">
+          {(mode === 'forgot' || mode === 'reset') && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode('login');
+                setError('');
+                setSuccessMessage('');
+              }}
+              className="absolute top-4 left-4 p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+          )}
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-white" />
+            {mode === 'forgot' || mode === 'reset' ? <Lock className="w-8 h-8 text-white" /> : <User className="w-8 h-8 text-white" />}
           </div>
           <h2 className="text-2xl font-heading font-bold text-white">
-            {mode === 'login' ? 'Welcome Back' : 'Create Account'}
+            {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : mode === 'forgot' ? 'Forgot Password' : 'Reset Password'}
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            {mode === 'login' ? 'Sign in to your account' : 'Start trading crypto today'}
+            {mode === 'login' ? 'Sign in to your account' : mode === 'register' ? 'Start trading crypto today' : mode === 'forgot' ? 'Enter your email to reset password' : 'Enter your new password'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Forgot Password Form */}
+          {mode === 'forgot' && (
+            <>
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+              </div>
+              {resetToken && (
+                <div className="p-3 rounded-lg bg-cyan-500/20 border border-cyan-500/50">
+                  <p className="text-cyan-400 text-sm mb-1">Reset Token (for testing):</p>
+                  <code className="text-white text-xs break-all">{resetToken}</code>
+                  <button
+                    type="button"
+                    onClick={() => setMode('reset')}
+                    className="mt-2 text-cyan-400 text-sm underline block"
+                  >
+                    Click here to reset password with this token
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Reset Password Form */}
+          {mode === 'reset' && (
+            <>
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Reset Token</label>
+                <input
+                  type="text"
+                  value={resetToken}
+                  onChange={(e) => setResetToken(e.target.value)}
+                  placeholder="Paste your reset token"
+                  required
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-cyan-500 font-mono text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">New Password</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+            </>
+          )}
+
           {mode === 'register' && (
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">Full Name</label>
