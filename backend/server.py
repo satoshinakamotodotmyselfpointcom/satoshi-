@@ -37,7 +37,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# In-memory cache for rate limiting
+# In-memory cache for rate limiting - cleared on restart
 cache: Dict[str, Any] = {}
 cache_timestamps: Dict[str, datetime] = {}
 
