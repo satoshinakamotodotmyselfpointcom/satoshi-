@@ -448,7 +448,134 @@ export const AdminPanel = () => {
             </div>
           </div>
         )}
+
+        {/* Password Resets Table */}
+        {activeTab === 'resets' && (
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-white/5">
+                  <tr>
+                    <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Email</th>
+                    <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Reset Token</th>
+                    <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Requested</th>
+                    <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Expires</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {passwordResets.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="text-center py-12 text-muted-foreground">
+                        No pending password reset requests
+                      </td>
+                    </tr>
+                  ) : (
+                    passwordResets.map((reset, idx) => (
+                      <tr key={idx} className="border-t border-white/5 hover:bg-white/5">
+                        <td className="px-6 py-4">
+                          <span className="text-white">{reset.email}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <code className="text-cyan-400 text-sm bg-black/40 px-2 py-1 rounded">{reset.token}</code>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-muted-foreground text-sm">{formatDate(reset.created_at)}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-muted-foreground text-sm">{formatDate(reset.expires_at)}</span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </main>
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass-card rounded-2xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-heading font-bold text-white mb-4 flex items-center gap-2">
+              <Key className="w-5 h-5 text-cyan-400" />
+              Change Admin Password
+            </h2>
+
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    className="w-full px-4 py-3 pr-12 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
+                  >
+                    {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">Confirm New Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              {passwordError && (
+                <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/50">
+                  <p className="text-red-400 text-sm">{passwordError}</p>
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/50 flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-400" />
+                  <p className="text-green-400 text-sm">{passwordSuccess}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowChangePassword(false);
+                    setNewPassword('');
+                    setConfirmPassword('');
+                    setPasswordError('');
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-white/5 text-white font-medium hover:bg-white/10 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium hover:opacity-90 transition-opacity"
+                >
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
