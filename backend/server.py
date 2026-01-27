@@ -355,6 +355,80 @@ async def get_user_balances(user: Dict = Depends(require_auth)):
         "total_withdrawn": user.get("total_withdrawn", 0)
     }
 
+# ============ ADMIN ENDPOINTS ============
+
+@api_router.post("/admin/login")
+async def admin_login(credentials: AdminLogin):
+    """Admin login"""
+    if credentials.email.lower() != ADMIN_EMAIL.lower():
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    if credentials.password != ADMIN_PASSWORD:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    
+    # Create admin token
+    payload = {
+        "user_id": "admin",
+        "email": ADMIN_EMAIL,
+        "is_admin": True,
+        "exp": datetime.now(timezone.utc) + timedelta(hours=24)
+    }
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    
+    return {
+        "token": token,
+        "admin": True,
+        "email": ADMIN_EMAIL
+    }
+
+@api_router.get("/admin/users")
+async def get_all_users(admin: Dict = Depends(require_admin)):
+    """Get all registered users (Admin only)"""
+    users = await db.users.find(
+        {},
+        {"_id": 0, "password": 0}
+    ).sort("created_at", -1).to_list(1000)
+    
+    return {
+        "total_users": len(users),
+        "users": users
+    }
+
+@api_router.get("/admin/transactions")
+async def get_all_transactions(admin: Dict = Depends(require_admin)):
+    """Get all transactions (Admin only)"""
+    transactions = await db.payment_transactions.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(100).to_list(100)
+    
+    return {
+        "total_transactions": len(transactions),
+        "transactions": transactions
+    }
+
+@api_router.get("/admin/stats")
+async def get_admin_stats(admin: Dict = Depends(require_admin)):
+    """Get platform statistics (Admin only)"""
+    total_users = await db.users.count_documents({})
+    total_transactions = await db.payment_transactions.count_documents({})
+    paid_transactions = await db.payment_transactions.count_documents({"payment_status": "paid"})
+    
+    # Calculate total revenue
+    pipeline = [
+        {"$match": {"payment_status": "paid"}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]
+    revenue_result = await db.payment_transactions.aggregate(pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total"] if revenue_result else 0
+    
+    return {
+        "total_users": total_users,
+        "total_transactions": total_transactions,
+        "paid_transactions": paid_transactions,
+        "total_revenue": total_revenue,
+        "platform_fee_earned": total_revenue * 0.02  # 2% fee
+    }
+
 @api_router.get("/crypto/price/{coin_id}", response_model=CryptoPrice)
 async def get_crypto_price(coin_id: str):
     """Get current price for a cryptocurrency"""
