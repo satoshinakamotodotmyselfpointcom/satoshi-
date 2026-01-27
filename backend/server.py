@@ -447,6 +447,194 @@ async def get_global_stats():
             "is_fallback": True
         }
 
+# ============ PAYMENT ENDPOINTS ============
+
+# Crypto purchase packages (amounts in USD)
+CRYPTO_PACKAGES = {
+    "btc_50": {"amount": 50.0, "crypto": "BTC", "name": "Buy $50 Bitcoin"},
+    "btc_100": {"amount": 100.0, "crypto": "BTC", "name": "Buy $100 Bitcoin"},
+    "btc_250": {"amount": 250.0, "crypto": "BTC", "name": "Buy $250 Bitcoin"},
+    "btc_500": {"amount": 500.0, "crypto": "BTC", "name": "Buy $500 Bitcoin"},
+    "btc_1000": {"amount": 1000.0, "crypto": "BTC", "name": "Buy $1000 Bitcoin"},
+    "eth_50": {"amount": 50.0, "crypto": "ETH", "name": "Buy $50 Ethereum"},
+    "eth_100": {"amount": 100.0, "crypto": "ETH", "name": "Buy $100 Ethereum"},
+    "eth_250": {"amount": 250.0, "crypto": "ETH", "name": "Buy $250 Ethereum"},
+    "custom": {"amount": 0.0, "crypto": "BTC", "name": "Custom Amount"}
+}
+
+class PaymentRequest(BaseModel):
+    package_id: str
+    origin_url: str
+    payment_method: str = "card"  # card, ideal
+    custom_amount: Optional[float] = None
+    crypto_type: Optional[str] = "BTC"
+
+class PaymentStatusRequest(BaseModel):
+    session_id: str
+
+@api_router.post("/payments/create-checkout")
+async def create_checkout_session(request: Request, payment_req: PaymentRequest):
+    """Create a Stripe checkout session for buying crypto"""
+    try:
+        # Validate package
+        if payment_req.package_id not in CRYPTO_PACKAGES:
+            raise HTTPException(status_code=400, detail="Invalid package")
+        
+        package = CRYPTO_PACKAGES[payment_req.package_id]
+        
+        # Handle custom amount
+        if payment_req.package_id == "custom":
+            if not payment_req.custom_amount or payment_req.custom_amount < 10:
+                raise HTTPException(status_code=400, detail="Minimum purchase is $10")
+            if payment_req.custom_amount > 10000:
+                raise HTTPException(status_code=400, detail="Maximum purchase is $10,000")
+            amount = float(payment_req.custom_amount)
+            crypto_type = payment_req.crypto_type or "BTC"
+        else:
+            amount = package["amount"]
+            crypto_type = package["crypto"]
+        
+        # Build URLs
+        origin_url = payment_req.origin_url.rstrip('/')
+        success_url = f"{origin_url}?payment=success&session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{origin_url}?payment=cancelled"
+        
+        # Initialize Stripe
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        
+        # Set payment methods based on request
+        payment_methods = ["card"]
+        if payment_req.payment_method == "ideal":
+            payment_methods = ["ideal"]
+        elif payment_req.payment_method == "card":
+            payment_methods = ["card"]
+        
+        # Create checkout session
+        checkout_request = CheckoutSessionRequest(
+            amount=amount,
+            currency="usd" if payment_req.payment_method == "card" else "eur",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            payment_methods=payment_methods,
+            metadata={
+                "crypto_type": crypto_type,
+                "amount_usd": str(amount),
+                "package_id": payment_req.package_id,
+                "source": "bitcoin_crypto_app"
+            }
+        )
+        
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store transaction in database
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "session_id": session.session_id,
+            "amount": amount,
+            "currency": "usd",
+            "crypto_type": crypto_type,
+            "payment_method": payment_req.payment_method,
+            "payment_status": "pending",
+            "status": "initiated",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id,
+            "amount": amount,
+            "crypto_type": crypto_type
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating checkout session: {e}")
+        raise HTTPException(status_code=500, detail=f"Payment initialization failed: {str(e)}")
+
+@api_router.get("/payments/status/{session_id}")
+async def get_payment_status(session_id: str, request: Request):
+    """Get payment status for a checkout session"""
+    try:
+        # Initialize Stripe
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        
+        # Get status from Stripe
+        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update database
+        update_data = {
+            "payment_status": status.payment_status,
+            "status": status.status,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.payment_transactions.update_one(
+            {"session_id": session_id},
+            {"$set": update_data}
+        )
+        
+        return {
+            "session_id": session_id,
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount": status.amount_total / 100,  # Convert from cents
+            "currency": status.currency
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting payment status: {e}")
+        raise HTTPException(status_code=500, detail="Failed to get payment status")
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events"""
+    try:
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        host_url = str(request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        # Update transaction in database
+        if webhook_response.session_id:
+            await db.payment_transactions.update_one(
+                {"session_id": webhook_response.session_id},
+                {"$set": {
+                    "payment_status": webhook_response.payment_status,
+                    "event_type": webhook_response.event_type,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+        
+        return {"status": "received"}
+        
+    except Exception as e:
+        logger.error(f"Webhook error: {e}")
+        return {"status": "error"}
+
+@api_router.get("/payments/packages")
+async def get_payment_packages():
+    """Get available crypto purchase packages"""
+    return {
+        "packages": [
+            {"id": k, **v} for k, v in CRYPTO_PACKAGES.items()
+        ],
+        "payment_methods": [
+            {"id": "card", "name": "Credit/Debit Card", "icon": "credit-card"},
+            {"id": "ideal", "name": "iDEAL", "icon": "bank", "region": "Netherlands"}
+        ]
+    }
+
 # Include the router in the main app
 app.include_router(api_router)
 
