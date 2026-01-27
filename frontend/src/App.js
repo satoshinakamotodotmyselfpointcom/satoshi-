@@ -88,8 +88,8 @@ const Dashboard = () => {
               <Activity className="w-5 h-5 text-black" />
             </div>
             <div>
-              <h1 className="text-xl font-heading font-black text-white">CryptoTrack</h1>
-              <p className="text-xs text-muted-foreground">Real-time market data</p>
+              <h1 className="text-xl font-heading font-black text-white">BITCOINCRYPTOWALLET</h1>
+              <p className="text-xs text-muted-foreground">Real Blockchain Wallets</p>
             </div>
           </div>
           
