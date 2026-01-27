@@ -232,6 +232,109 @@ class TrendingCoin(BaseModel):
 async def root():
     return {"message": "CryptoTrack API", "status": "online"}
 
+# ============ AUTH ENDPOINTS ============
+
+@api_router.post("/auth/register")
+async def register(user_data: UserRegister):
+    """Register a new user"""
+    # Check if email already exists
+    existing = await db.users.find_one({"email": user_data.email.lower()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Validate password
+    if len(user_data.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Create user
+    user_id = str(uuid.uuid4())
+    user = {
+        "id": user_id,
+        "email": user_data.email.lower(),
+        "password": hash_password(user_data.password),
+        "name": user_data.name,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "balances": {
+            "BTC": 0.0,
+            "ETH": 0.0,
+            "SOL": 0.0,
+            "XRP": 0.0,
+            "USDT": 0.0
+        },
+        "total_deposited": 0.0,
+        "total_withdrawn": 0.0
+    }
+    
+    await db.users.insert_one(user)
+    
+    # Create token
+    token = create_token(user_id, user_data.email.lower())
+    
+    return {
+        "token": token,
+        "user": {
+            "id": user_id,
+            "email": user_data.email.lower(),
+            "name": user_data.name,
+            "balances": user["balances"]
+        }
+    }
+
+@api_router.post("/auth/login")
+async def login(credentials: UserLogin):
+    """Login user"""
+    user = await db.users.find_one({"email": credentials.email.lower()})
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    if not verify_password(credentials.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Create token
+    token = create_token(user["id"], user["email"])
+    
+    return {
+        "token": token,
+        "user": {
+            "id": user["id"],
+            "email": user["email"],
+            "name": user["name"],
+            "balances": user.get("balances", {})
+        }
+    }
+
+@api_router.get("/auth/me")
+async def get_me(user: Dict = Depends(require_auth)):
+    """Get current user profile"""
+    return {
+        "id": user["id"],
+        "email": user["email"],
+        "name": user["name"],
+        "balances": user.get("balances", {}),
+        "total_deposited": user.get("total_deposited", 0),
+        "total_withdrawn": user.get("total_withdrawn", 0),
+        "created_at": user.get("created_at")
+    }
+
+@api_router.get("/auth/transactions")
+async def get_user_transactions(user: Dict = Depends(require_auth)):
+    """Get user's transaction history"""
+    transactions = await db.payment_transactions.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    return {"transactions": transactions}
+
+@api_router.get("/auth/balances")
+async def get_user_balances(user: Dict = Depends(require_auth)):
+    """Get user's crypto balances"""
+    return {
+        "balances": user.get("balances", {}),
+        "total_deposited": user.get("total_deposited", 0),
+        "total_withdrawn": user.get("total_withdrawn", 0)
+    }
+
 @api_router.get("/crypto/price/{coin_id}", response_model=CryptoPrice)
 async def get_crypto_price(coin_id: str):
     """Get current price for a cryptocurrency"""
