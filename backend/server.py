@@ -653,12 +653,13 @@ class PaymentRequest(BaseModel):
     payment_method: str = "card"  # card, ideal
     custom_amount: Optional[float] = None
     crypto_type: Optional[str] = "BTC"
+    user_id: Optional[str] = None
 
 class PaymentStatusRequest(BaseModel):
     session_id: str
 
 @api_router.post("/payments/create-checkout")
-async def create_checkout_session(request: Request, payment_req: PaymentRequest):
+async def create_checkout_session(request: Request, payment_req: PaymentRequest, user: Optional[Dict] = Depends(get_current_user)):
     """Create a Stripe checkout session for buying crypto"""
     try:
         # Validate package
