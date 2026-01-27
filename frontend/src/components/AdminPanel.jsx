@@ -350,6 +350,7 @@ export const AdminPanel = () => {
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Joined</th>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Deposited</th>
                     <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">BTC Balance</th>
+                    <th className="text-left px-6 py-4 text-muted-foreground text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
