@@ -21,15 +21,49 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
     setLoading(true);
 
     try {
       if (mode === 'login') {
         await login(email, password);
-      } else {
+        onClose();
+      } else if (mode === 'register') {
         await register(email, password, name);
+        onClose();
+      } else if (mode === 'forgot') {
+        // Request password reset
+        const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+        if (data.reset_token) {
+          setResetToken(data.reset_token);
+          setSuccessMessage('Reset link sent! Check your email or use the token below.');
+        } else {
+          setSuccessMessage('If this email exists, a reset link has been sent.');
+        }
+      } else if (mode === 'reset') {
+        // Reset password with token
+        const response = await fetch(`${API_URL}/api/auth/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: resetToken, new_password: newPassword })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || 'Reset failed');
+        }
+        setSuccessMessage('Password reset successful! You can now login.');
+        setTimeout(() => {
+          setMode('login');
+          setResetToken('');
+          setNewPassword('');
+          setSuccessMessage('');
+        }, 2000);
       }
-      onClose();
     } catch (err) {
       setError(err.message);
     } finally {
