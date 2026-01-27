@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-01-26T23:19:47.032300",
-  "total_tests": 9,
-  "passed_tests": 9,
-  "success_rate": 100.0,
+  "timestamp": "2026-01-27T03:25:43.397090",
+  "total_tests": 16,
+  "passed_tests": 15,
+  "success_rate": 93.75,
   "test_details": [
     {
       "test": "API Root",
@@ -53,9 +53,10 @@
         "days",
         "prices",
         "market_caps",
-        "total_volumes"
+        "total_volumes",
+        "is_fallback"
       ],
-      "has_fallback": false
+      "has_fallback": true
     },
     {
       "test": "Bitcoin Historical (30D)",
@@ -65,9 +66,10 @@
         "days",
         "prices",
         "market_caps",
-        "total_volumes"
+        "total_volumes",
+        "is_fallback"
       ],
-      "has_fallback": false
+      "has_fallback": true
     },
     {
       "test": "Bitcoin Historical (90D)",
@@ -112,10 +114,73 @@
         "markets",
         "btc_dominance",
         "eth_dominance",
-        "last_updated",
-        "is_fallback"
+        "last_updated"
       ],
-      "has_fallback": true
+      "has_fallback": false
+    },
+    {
+      "test": "User Registration",
+      "status": "PASS",
+      "response_keys": [
+        "token",
+        "user"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "User Login",
+      "status": "FAIL",
+      "expected_status": 200,
+      "actual_status": 401,
+      "error": "{\"detail\":\"Invalid email or password\"}"
+    },
+    {
+      "test": "Get User Profile",
+      "status": "PASS",
+      "response_keys": [
+        "id",
+        "email",
+        "name",
+        "balances",
+        "total_deposited",
+        "total_withdrawn",
+        "created_at"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Get User Transactions",
+      "status": "PASS",
+      "response_keys": [
+        "transactions"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Get User Balances",
+      "status": "PASS",
+      "response_keys": [
+        "balances",
+        "total_deposited",
+        "total_withdrawn"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Invalid Login",
+      "status": "PASS",
+      "response_keys": [
+        "detail"
+      ],
+      "has_fallback": false
+    },
+    {
+      "test": "Unauthorized Access",
+      "status": "PASS",
+      "response_keys": [
+        "detail"
+      ],
+      "has_fallback": false
     }
   ]
 }
