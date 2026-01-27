@@ -796,6 +796,9 @@ async def stripe_webhook(request: Request):
         
         # Update transaction in database
         if webhook_response.session_id:
+            # Get transaction details
+            transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
+            
             await db.payment_transactions.update_one(
                 {"session_id": webhook_response.session_id},
                 {"$set": {
@@ -804,6 +807,25 @@ async def stripe_webhook(request: Request):
                     "updated_at": datetime.now(timezone.utc).isoformat()
                 }}
             )
+            
+            # If payment succeeded, credit user balance
+            if webhook_response.payment_status == "paid" and transaction and transaction.get("user_id"):
+                user_id = transaction["user_id"]
+                crypto_type = transaction.get("crypto_type", "BTC")
+                crypto_amount = transaction.get("crypto_amount", 0)
+                amount_usd = transaction.get("amount", 0)
+                
+                # Update user balance
+                await db.users.update_one(
+                    {"id": user_id},
+                    {
+                        "$inc": {
+                            f"balances.{crypto_type}": crypto_amount,
+                            "total_deposited": amount_usd
+                        }
+                    }
+                )
+                logger.info(f"Credited {crypto_amount} {crypto_type} to user {user_id}")
         
         return {"status": "received"}
         
