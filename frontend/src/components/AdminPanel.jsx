@@ -387,6 +387,14 @@ export const AdminPanel = () => {
                         <td className="px-6 py-4">
                           <span className="text-orange-400 font-mono">{user.balances?.BTC?.toFixed(6) || '0.000000'} BTC</span>
                         </td>
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => setSelectedUser(user)}
+                            className="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-400 text-sm hover:bg-cyan-500/30 transition-colors"
+                          >
+                            View Details
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}
