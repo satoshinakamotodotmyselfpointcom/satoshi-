@@ -323,6 +323,17 @@ export const AdminPanel = () => {
             <CreditCard className="w-4 h-4 inline mr-2" />
             Transactions ({transactions.length})
           </button>
+          <button
+            onClick={() => setActiveTab('resets')}
+            className={`px-6 py-3 rounded-xl font-medium transition-colors ${
+              activeTab === 'resets'
+                ? 'bg-cyan-500 text-black'
+                : 'bg-white/5 text-white hover:bg-white/10'
+            }`}
+          >
+            <Key className="w-4 h-4 inline mr-2" />
+            Password Resets ({passwordResets.length})
+          </button>
         </div>
 
         {/* Users Table */}
