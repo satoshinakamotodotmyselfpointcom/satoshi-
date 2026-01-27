@@ -22,6 +22,7 @@ export const AdminPanel = () => {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [passwordResets, setPasswordResets] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     if (token) {
