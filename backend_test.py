@@ -215,8 +215,8 @@ class CryptoAPITester:
         """Test user registration endpoint"""
         # Generate unique test user
         timestamp = datetime.now().strftime("%H%M%S")
-        test_email = f"test_user_{timestamp}@example.com"
-        test_password = "TestPass123!"
+        self.test_email = f"test_user_{timestamp}@example.com"
+        self.test_password = "TestPass123!"
         test_name = f"Test User {timestamp}"
         
         success, response = self.run_test(
@@ -225,8 +225,8 @@ class CryptoAPITester:
             "auth/register",
             200,
             {
-                "email": test_email,
-                "password": test_password,
+                "email": self.test_email,
+                "password": self.test_password,
                 "name": test_name
             }
         )
@@ -264,14 +264,9 @@ class CryptoAPITester:
 
     def test_user_login(self):
         """Test user login endpoint"""
-        if not self.test_user_id:
-            print("   Skipping login test - no registered user")
+        if not self.test_email or not self.test_password:
+            print("   Skipping login test - no registered user credentials")
             return False
-            
-        # Use the same credentials from registration
-        timestamp = datetime.now().strftime("%H%M%S")
-        test_email = f"test_user_{timestamp}@example.com"
-        test_password = "TestPass123!"
         
         success, response = self.run_test(
             "User Login",
@@ -279,8 +274,8 @@ class CryptoAPITester:
             "auth/login",
             200,
             {
-                "email": test_email,
-                "password": test_password
+                "email": self.test_email,
+                "password": self.test_password
             }
         )
         
