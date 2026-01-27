@@ -26,20 +26,29 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Stripe API Key
-STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
+STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY')
+if not STRIPE_API_KEY:
+    logger.warning("STRIPE_API_KEY not set - payments will not work")
 
 # Blockchain.info API (FREE - for real Bitcoin data)
 BLOCKCHAIN_INFO_API = "https://blockchain.info"
 BLOCKCHAIN_WS_URL = "wss://ws.blockchain.info/inv"
 
 # JWT Settings
-JWT_SECRET = os.environ.get('JWT_SECRET', 'bitcoin-crypto-app-secret-key-2024')
+JWT_SECRET = os.environ.get('JWT_SECRET')
+if not JWT_SECRET:
+    JWT_SECRET = 'bitcoin-crypto-app-secret-key-2024-prod'
+    logger.warning("JWT_SECRET not set - using default")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 
-# Admin credentials (from environment or defaults)
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'ademcakir271@gmail.com')
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin2024!')
+# Admin credentials (from environment)
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+if not ADMIN_EMAIL or not ADMIN_PASSWORD:
+    ADMIN_EMAIL = 'admin@bitcoincryptowallet.com'
+    ADMIN_PASSWORD = 'AdminSecure2024!'
+    logger.warning("Admin credentials not set - using defaults")
 
 # Security
 security = HTTPBearer(auto_error=False)
