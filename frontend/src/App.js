@@ -7,6 +7,7 @@ import { TrendingCoins } from "./components/TrendingCoins";
 import { TradeActions } from "./components/TradeActions";
 import { AuthModal } from "./components/AuthModal";
 import { UserDashboard } from "./components/UserDashboard";
+import { AdminPanel } from "./components/AdminPanel";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Activity, Copy, Check, User, LogIn } from "lucide-react";
 import { useState } from "react";
