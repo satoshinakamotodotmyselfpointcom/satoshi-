@@ -5,7 +5,10 @@ import { GlobalStats } from "./components/GlobalStats";
 import { TopCoins } from "./components/TopCoins";
 import { TrendingCoins } from "./components/TrendingCoins";
 import { TradeActions } from "./components/TradeActions";
-import { Activity, Copy, Check } from "lucide-react";
+import { AuthModal } from "./components/AuthModal";
+import { UserDashboard } from "./components/UserDashboard";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { Activity, Copy, Check, User, LogIn } from "lucide-react";
 import { useState } from "react";
 
 const BITCOIN_ADDRESS = "bc1qp6ywmsa9ylwzrw44z2mv5m37gn8s6yy5kaeqkd";
