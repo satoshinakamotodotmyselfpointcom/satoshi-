@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { X, Mail, Lock, User, Loader2, Eye, EyeOff } from 'lucide-react';
+import { X, Mail, Lock, User, Loader2, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
-  const [mode, setMode] = useState(initialMode);
+  const [mode, setMode] = useState(initialMode); // login, register, forgot, reset
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetToken, setResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   
   const { login, register } = useAuth();
 
