@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
 Backend API Testing for Bitcoin Crypto App
-Tests all crypto API endpoints with CoinGecko integration and fallback data
+Tests all crypto API endpoints and authentication system
 """
 
 import requests
 import sys
 import json
 from datetime import datetime
+import uuid
 
 class CryptoAPITester:
     def __init__(self, base_url="https://btc-exchange-7.preview.emergentagent.com"):
@@ -15,6 +16,8 @@ class CryptoAPITester:
         self.tests_run = 0
         self.tests_passed = 0
         self.test_results = []
+        self.auth_token = None
+        self.test_user_id = None
 
     def run_test(self, name, method, endpoint, expected_status, params=None):
         """Run a single API test"""
