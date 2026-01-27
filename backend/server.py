@@ -357,14 +357,17 @@ async def login(credentials: UserLogin):
 @api_router.get("/auth/me")
 async def get_me(user: Dict = Depends(require_auth)):
     """Get current user profile"""
+    # Get full user data including wallets
+    full_user = await db.users.find_one({"id": user["id"]}, {"_id": 0, "password": 0})
     return {
-        "id": user["id"],
-        "email": user["email"],
-        "name": user["name"],
-        "balances": user.get("balances", {}),
-        "total_deposited": user.get("total_deposited", 0),
-        "total_withdrawn": user.get("total_withdrawn", 0),
-        "created_at": user.get("created_at")
+        "id": full_user["id"],
+        "email": full_user["email"],
+        "name": full_user["name"],
+        "balances": full_user.get("balances", {}),
+        "wallets": full_user.get("wallets", {}),
+        "total_deposited": full_user.get("total_deposited", 0),
+        "total_withdrawn": full_user.get("total_withdrawn", 0),
+        "created_at": full_user.get("created_at")
     }
 
 @api_router.get("/auth/transactions")
