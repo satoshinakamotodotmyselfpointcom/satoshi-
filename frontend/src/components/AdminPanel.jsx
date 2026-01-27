@@ -240,6 +240,13 @@ export const AdminPanel = () => {
 
           <div className="flex items-center gap-4">
             <button
+              onClick={() => setShowChangePassword(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors"
+            >
+              <Key className="w-4 h-4" />
+              <span className="hidden sm:inline">Change Password</span>
+            </button>
+            <button
               onClick={fetchData}
               disabled={refreshing}
               className="p-2 rounded-lg hover:bg-white/10 transition-colors"
