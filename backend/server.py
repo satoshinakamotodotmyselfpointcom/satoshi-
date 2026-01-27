@@ -286,12 +286,23 @@ async def register(user_data: UserRegister):
     
     # Create user
     user_id = str(uuid.uuid4())
+    
+    # Generate unique wallet addresses for each crypto
+    wallets = {
+        "BTC": generate_wallet_address("BTC", user_id),
+        "ETH": generate_wallet_address("ETH", user_id),
+        "SOL": generate_wallet_address("SOL", user_id),
+        "XRP": generate_wallet_address("XRP", user_id),
+        "USDT": generate_wallet_address("USDT", user_id)
+    }
+    
     user = {
         "id": user_id,
         "email": user_data.email.lower(),
         "password": hash_password(user_data.password),
         "name": user_data.name,
         "created_at": datetime.now(timezone.utc).isoformat(),
+        "wallets": wallets,
         "balances": {
             "BTC": 0.0,
             "ETH": 0.0,
@@ -314,7 +325,8 @@ async def register(user_data: UserRegister):
             "id": user_id,
             "email": user_data.email.lower(),
             "name": user_data.name,
-            "balances": user["balances"]
+            "balances": user["balances"],
+            "wallets": wallets
         }
     }
 
