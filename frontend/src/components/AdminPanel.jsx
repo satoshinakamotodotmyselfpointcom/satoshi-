@@ -35,10 +35,11 @@ export const AdminPanel = () => {
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
       
-      const [usersRes, transactionsRes, statsRes] = await Promise.all([
+      const [usersRes, transactionsRes, statsRes, resetsRes] = await Promise.all([
         fetch(`${API_URL}/api/admin/users`, { headers }),
         fetch(`${API_URL}/api/admin/transactions`, { headers }),
-        fetch(`${API_URL}/api/admin/stats`, { headers })
+        fetch(`${API_URL}/api/admin/stats`, { headers }),
+        fetch(`${API_URL}/api/admin/password-resets`, { headers })
       ]);
 
       if (usersRes.ok) {
@@ -53,10 +54,56 @@ export const AdminPanel = () => {
         const data = await statsRes.json();
         setStats(data);
       }
+      if (resetsRes.ok) {
+        const data = await resetsRes.json();
+        setPasswordResets(data.resets || []);
+      }
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
       setRefreshing(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/admin/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ new_password: newPassword })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Failed to change password');
+      }
+
+      setPasswordSuccess('Password changed successfully!');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => {
+        setShowChangePassword(false);
+        setPasswordSuccess('');
+      }, 2000);
+    } catch (err) {
+      setPasswordError(err.message);
     }
   };
 
