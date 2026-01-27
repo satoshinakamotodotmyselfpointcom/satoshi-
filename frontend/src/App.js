@@ -170,14 +170,22 @@ const Dashboard = () => {
           </div>
         </footer>
       </main>
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+        initialMode={authMode}
+      />
     </div>
   );
 };
 
 function App() {
   return (
-    <div data-testid="crypto-app" className="App">
-      <BrowserRouter>
+    <AuthProvider>
+      <div data-testid="crypto-app" className="App">
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Dashboard />} />
         </Routes>
