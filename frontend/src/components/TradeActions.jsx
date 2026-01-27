@@ -364,6 +364,105 @@ export const TradeActions = () => {
                 </div>
               </div>
             )}
+
+            {/* Withdraw Modal */}
+            {activeModal === 'withdraw' && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                    <Banknote className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-heading font-bold text-white">Withdraw Crypto</h2>
+                    <p className="text-muted-foreground text-sm">Get 98% of your withdrawal</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-2 block">Select Cryptocurrency</label>
+                    <select
+                      data-testid="withdraw-coin-select"
+                      value={withdrawCoin}
+                      onChange={(e) => setWithdrawCoin(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                    >
+                      <option value="BTC">Bitcoin (BTC) - $88,360.65</option>
+                      <option value="ETH">Ethereum (ETH) - $3,125.50</option>
+                      <option value="SOL">Solana (SOL) - $238.45</option>
+                      <option value="XRP">XRP (XRP) - $3.05</option>
+                      <option value="BNB">BNB (BNB) - $685.20</option>
+                      <option value="DOGE">Dogecoin (DOGE) - $0.325</option>
+                      <option value="ADA">Cardano (ADA) - $0.985</option>
+                      <option value="AVAX">Avalanche (AVAX) - $35.80</option>
+                      <option value="LINK">Chainlink (LINK) - $22.15</option>
+                      <option value="USDT">Tether (USDT) - $1.00</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-2 block">Amount ({withdrawCoin})</label>
+                    <input
+                      data-testid="withdraw-amount-input"
+                      type="number"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      placeholder="0.00"
+                      className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-xl focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-2 block">Withdrawal Address</label>
+                    <input
+                      data-testid="withdraw-address-input"
+                      type="text"
+                      value={withdrawAddress}
+                      onChange={(e) => setWithdrawAddress(e.target.value)}
+                      placeholder="Enter your wallet address"
+                      className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  {/* Withdrawal Summary */}
+                  <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Total Value:</span>
+                      <span className="text-white font-mono">{formatUSD(amount, withdrawCoin)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Fee (2%):</span>
+                      <span className="text-red-400 font-mono">-${calculateWithdrawal(amount, withdrawCoin).fee.toFixed(2)}</span>
+                    </div>
+                    <div className="border-t border-amber-500/20 pt-2 flex justify-between">
+                      <span className="text-amber-400 font-bold">You Receive (98%):</span>
+                      <span className="text-amber-400 font-mono font-bold">${calculateWithdrawal(amount, withdrawCoin).youReceive.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    data-testid="withdraw-confirm-btn"
+                    disabled={!amount || !withdrawAddress}
+                    className={`flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg transition-all ${
+                      amount && withdrawAddress 
+                        ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:opacity-90' 
+                        : 'bg-gray-600 cursor-not-allowed opacity-50'
+                    }`}
+                    onClick={() => {
+                      alert(`Withdrawal request submitted!\n\nAmount: ${amount} ${withdrawCoin}\nYou will receive: $${calculateWithdrawal(amount, withdrawCoin).youReceive.toFixed(2)}\nTo: ${withdrawAddress}\n\nProcessing time: 10-30 minutes`);
+                      closeModal();
+                    }}
+                  >
+                    <Banknote className="w-5 h-5" />
+                    Withdraw Now
+                  </button>
+
+                  <p className="text-center text-muted-foreground text-xs">
+                    Withdrawals are processed within 10-30 minutes. Minimum withdrawal: $10
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
