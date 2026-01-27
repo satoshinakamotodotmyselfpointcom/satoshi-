@@ -349,7 +349,8 @@ async def login(credentials: UserLogin):
             "id": user["id"],
             "email": user["email"],
             "name": user["name"],
-            "balances": user.get("balances", {})
+            "balances": user.get("balances", {}),
+            "wallets": user.get("wallets", {})
         }
     }
 
