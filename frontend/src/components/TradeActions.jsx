@@ -152,47 +152,117 @@ export const TradeActions = () => {
                   </div>
                   <div>
                     <h2 className="text-2xl font-heading font-bold text-white">Buy Bitcoin</h2>
-                    <p className="text-muted-foreground text-sm">Purchase BTC instantly</p>
+                    <p className="text-muted-foreground text-sm">Purchase BTC with Card or iDEAL</p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
+                  {/* Payment Method Selection */}
                   <div>
-                    <label className="text-sm text-muted-foreground mb-2 block">Amount (BTC)</label>
-                    <input
-                      data-testid="buy-amount-input"
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-xl focus:outline-none focus:border-cyan-500"
-                    />
-                    <p className="text-muted-foreground text-sm mt-2">≈ {formatUSD(amount)}</p>
+                    <label className="text-sm text-muted-foreground mb-2 block">Payment Method</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        data-testid="payment-card-btn"
+                        onClick={() => setPaymentMethod('card')}
+                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${
+                          paymentMethod === 'card'
+                            ? 'bg-green-500/20 border-green-500'
+                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                        }`}
+                      >
+                        <CreditCard className={`w-6 h-6 ${paymentMethod === 'card' ? 'text-green-400' : 'text-white'}`} />
+                        <div className="text-left">
+                          <p className={`font-medium ${paymentMethod === 'card' ? 'text-green-400' : 'text-white'}`}>Credit Card</p>
+                          <p className="text-xs text-muted-foreground">Visa, Mastercard</p>
+                        </div>
+                      </button>
+                      <button
+                        data-testid="payment-ideal-btn"
+                        onClick={() => setPaymentMethod('ideal')}
+                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${
+                          paymentMethod === 'ideal'
+                            ? 'bg-purple-500/20 border-purple-500'
+                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                        }`}
+                      >
+                        <Building2 className={`w-6 h-6 ${paymentMethod === 'ideal' ? 'text-purple-400' : 'text-white'}`} />
+                        <div className="text-left">
+                          <p className={`font-medium ${paymentMethod === 'ideal' ? 'text-purple-400' : 'text-white'}`}>iDEAL</p>
+                          <p className="text-xs text-muted-foreground">Netherlands</p>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Amount Input */}
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-2 block">Amount (USD)</label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                      <input
+                        data-testid="buy-amount-input"
+                        type="number"
+                        value={buyAmount}
+                        onChange={(e) => setBuyAmount(e.target.value)}
+                        placeholder="100"
+                        min="10"
+                        max="10000"
+                        className="w-full pl-8 pr-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white font-mono text-xl focus:outline-none focus:border-cyan-500"
+                      />
+                    </div>
+                    <p className="text-muted-foreground text-sm mt-2">
+                      ≈ {(parseFloat(buyAmount || 0) / PRICES.BTC).toFixed(6)} BTC
+                    </p>
+                  </div>
+
+                  {/* Quick Amount Buttons */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[50, 100, 250, 500].map((amt) => (
+                      <button
+                        key={amt}
+                        onClick={() => setBuyAmount(amt.toString())}
+                        className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                          buyAmount === amt.toString()
+                            ? 'bg-green-500 text-black'
+                            : 'bg-white/5 text-white hover:bg-white/10'
+                        }`}
+                      >
+                        ${amt}
+                      </button>
+                    ))}
                   </div>
 
                   <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
                     <p className="text-green-400 text-sm">Current Price: ${PRICES.BTC.toLocaleString()} per BTC</p>
                   </div>
 
-                  <a
-                    data-testid="buy-coinbase-link"
-                    href="https://www.coinbase.com/price/bitcoin"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg hover:opacity-90 transition-opacity"
+                  {/* Pay Button */}
+                  <button
+                    data-testid="buy-pay-btn"
+                    onClick={handlePayment}
+                    disabled={isProcessing || !buyAmount || parseFloat(buyAmount) < 10}
+                    className={`flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-lg transition-all ${
+                      isProcessing || !buyAmount || parseFloat(buyAmount) < 10
+                        ? 'bg-gray-600 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90'
+                    }`}
                   >
-                    Buy on Coinbase <ExternalLink className="w-5 h-5" />
-                  </a>
-                  
-                  <a
-                    data-testid="buy-binance-link"
-                    href="https://www.binance.com/en/trade/BTC_USDT"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-colors"
-                  >
-                    Buy on Binance <ExternalLink className="w-5 h-5" />
-                  </a>
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        {paymentMethod === 'card' ? <CreditCard className="w-5 h-5" /> : <Building2 className="w-5 h-5" />}
+                        Pay ${buyAmount || 0} with {paymentMethod === 'card' ? 'Card' : 'iDEAL'}
+                      </>
+                    )}
+                  </button>
+
+                  <p className="text-center text-muted-foreground text-xs">
+                    Secure payment powered by Stripe. Min: $10, Max: $10,000
+                  </p>
                 </div>
               </div>
             )}
